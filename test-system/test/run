@@ -1,0 +1,2 @@
+#!/bin/bash
+exec ./errtest.rb 2>&1

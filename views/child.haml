@@ -1,0 +1,26 @@
+%h1
+  Process: #{@child.name}
+
+%form
+  %select{:onchange=>"location.href = location.pathname + '/log?logfile=' + this.options[this.selectedIndex].value"}
+    %option{:disabled=>true} Old logs:
+
+    - for path in @child.logfiles
+      - filename = File.basename path
+      - filesize_k = File.size(path) / 1024
+
+      %option{:value=>filename}
+        #{filename} (#{filesize_k}k)
+
+
+%h2 Current log (refreshing every 2 seconds):
+
+#log{:style=>"overflow:auto; height: 600px; word-wrap: break-word;"}
+
+:javascript
+  function refresh() {
+    $("#log").load("/#{@child.name}/log", null, function(){$("#log").scrollTo($("#bottom")); });
+  }
+  refresh();
+  setInterval(refresh, 2000);
+  

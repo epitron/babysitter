@@ -1,0 +1,31 @@
+%h1 #{babysitter.hostname}
+%p (auto-refreshing)
+
+#throbber
+  
+#processes
+  
+:javascript
+  function refresh() {
+    $("#processes").load("/processes");
+  }
+  refresh();
+  setInterval(refresh, 1000);
+
+  function call_action(url) {
+    refresh();
+    $.ajax({
+      url: url,
+      beforeSend: function() { 
+        $("#throbber").show();
+      }, 
+      success: function(data) {
+        $("#throbber").hide(); 
+        $("#debug").prepend(data);
+      }
+    });
+    
+  }
+  
+%pre#debug.console
+

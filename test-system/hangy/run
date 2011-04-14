@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+$stdout.sync = true
+
+5.times do
+  puts "THUMP!"
+  sleep 1
+end
+
+loop { sleep 1 }
+

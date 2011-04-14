@@ -1,0 +1,32 @@
+#!/bin/bash
+while true
+do
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "crap"
+  echo "crap"
+  echo "junk"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "spam"
+  echo "humbug"
+  sleep 1
+done

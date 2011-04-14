@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+  <script src='jquery.min.js'></script>
+
+  <script>
+  
+  function loadscript(src) {
+    var script;
+    
+    if ( document.createElement && ((script = document.createElement('script'))) ) {
+        script.type = 'text/javascript';
+        script.src = src;
+        
+        var heads = document.getElementsByTagName('head');
+        if (heads[0]) {
+          heads[0].appendChild(script);
+        }
+    }
+    
+    return script;
+  }    
+      
+  function write_history(data) {
+    var p = $("<div class='line' style='display:none'>" + data + "</div>");
+    if($('#history div.line').size() > max_history) {
+      $('#history div.line:last').slideDown(100, function() {
+        $(this).remove();
+      });
+    }
+    $('#history').prepend(p);
+    p.slideDown(140);
+  }
+  
+  
+  if(!("WebSocket" in window)) {
+    loadscript('web-socket-js/swfobject.js');
+    loadscript('web-socket-js/FABridge.js');
+    loadscript('web-socket-js/web_socket.js');
+    flashwebsocket = true;
+    //alert("Sorry, the build of your browser does not support WebSockets. Please use latest Chrome or Webkit nightly");
+    //return;
+  } else {
+    flashwebsocket = false;
+  }
+  
+    
+  $(document).ready(function(){
+    if (flashwebsocket) {
+      WebSocket.__swfLocation = "web-socket-js/WebSocketMain.swf";
+    }
+    
+    max_history = 30;
+    
+    host = document.location.hostname;
+    if (host == "") host = "localhost";
+    
+    ws = new WebSocket("ws://"+host+":9876/");
+    
+    ws.onmessage = function(evt) {
+      //data = eval("(" + evt.data + ")");
+      globalevt = evt;
+      write_history(evt.data);
+      //var p = $("<div class='tweet' style='display:none'><div class='content'><a class='main-screenname' href='http://www.twitter.com/" + data.user.screen_name + "/status/" + data.id + "' target='_blank'>" + data.user.screen_name + "</a> " + data.text + "</div></div>");
+    };
+    ws.onclose = function() {
+      write_history("<h2>Disconnected!</h2>");
+      //alert("socket closed");
+    };
+    ws.onopen = function() {
+      write_history("<h2>Connected!</h2>");
+      //alert("connected...");
+    };
+
+  
+    if (flashwebsocket) {
+      write_history("<h3>Using Flash (emulated) WebSocket.</h3>");
+    } else {
+      write_history("<h3>Using Native WebSocket.</h3>");
+    }
+
+  });
+  
+    
+  
+  </script>
+
+  
+  
+  <style>
+  html, body {
+    font-family: bitstream vera sans, dejavu sans, verdana, sans-serif;
+    font-size: 93%;
+  }
+  
+  #history {
+    width: 70%;
+    position: absolute;
+    border: 1px dotted grey;
+    right: 1em;
+    top: 1em;
+    padding: 0.2em 1em 0.2em 1em;
+  }
+  
+  #controls {
+    width: 20%;
+    position: absolute;
+    left: 1em;
+    top: 1em;
+  }
+  </style>
+
+</head>
+<body>
+
+  <div id="controls">
+    <h3>WebSocket Demo</h3>
+    <p>Click these buttons to send events to the server. Its responses will show up at the right.</p>
+    <br />
+    <input type="button" value="Button" onclick="ws.send('button pressed');" />
+    <br />
+    <input type="button" value="Date" onclick="ws.send(Date());" />
+    <br />
+    <input type="button" value="Whee" onclick="ws.send('Whee!');" />
+  </div>
+  
+  <div id="history"></div>
+  
+</body>
+</html>

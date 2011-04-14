@@ -1,0 +1,30 @@
+.maincontent
+  %table.listing{:style=>"width: 500px;"}
+    %tbody
+      %tr.highlighted
+        %th Process
+        %th State
+        %th Actions
+        
+      - for child in babysitter.children
+        %tr.processes
+          %td{:width=>"100"}
+            %a{:href=>"/#{child.name}", :target=>"_blank"}
+              #{child.name}
+              - if child.pid
+                (pid: #{child.pid})
+            - if child.multiplexed
+              [m]
+          - state = child.state
+          %td{:width=>"90"}
+            %span{:class=>state}
+              = state
+              - if state == :restarting
+                (#{child.crashes} crashes)
+          %td{:width=>"50"}
+            - for action in child.actions
+              - url = "/#{child.name}/#{action}"
+              %a{:href=>url, :onclick=>"call_action('#{url}'); return false;"}= action
+              
+              
+

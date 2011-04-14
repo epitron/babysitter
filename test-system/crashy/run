@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "Working..."
+sleep 1
+echo 'Crash!'
