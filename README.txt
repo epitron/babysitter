@@ -12,6 +12,7 @@ It's fully compatible with djb's "daemontools" process manager (aka. svscan).
 
   * eventmachine
   * file-tail
-  
+  * sinatra
+  * haml
 
 (c) 2011 by Chris Gahan
