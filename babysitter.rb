@@ -236,6 +236,7 @@ def parse_args
     puts
   end
   
+  [options, ARGV]
 end
 
 

@@ -234,7 +234,7 @@ class Child
 
         if sibling.state == :running
           puts "     - Stopping..."
-          sibling.stop
+          sibling.stop(true)
         end
       end
     end
