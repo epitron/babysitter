@@ -115,7 +115,7 @@ class Babysitter
     puts "Stopping children..."
     
     children.each do |child|
-      child.stop
+      child.stop(true)
     end
     
     tries = 0
@@ -143,7 +143,7 @@ class Babysitter
   def [](name)
     @children_by_name[name]
   end
-
+  
 end
 
 
@@ -159,15 +159,19 @@ end
 USAGE = %{
 Usage: babysitter [options] <launch dir>
 
-Where <launch dir> is a directory that contains a set of "process directories", one per process to launch.
+Where <launch dir> is a directory that contains a set of "process directories", one per
+process to launch.
 
-Each of these process directories must contain an executable in it called "run" that launches the process.
+Each of these process directories must contain an executable in it called "run" that
+launches the process.
 
-If the process forks into the background, it must contain a "run_background" script that launches the process and creates a "current.pid" file in that directory before it terminates.
-
+If the process forks into the background, it must contain a "run_background" script that
+launches the process and creates a "current.pid" file in that directory before it
+terminates.
 }
 
-def make_babysitter_go_now
+
+def parse_args
 
   options = {
     :master       => "localhost:4444",
@@ -216,7 +220,6 @@ def make_babysitter_go_now
       puts OptionParser::Version.join('.')
       exit
     end
-    
   end
   
   begin 
@@ -233,8 +236,14 @@ def make_babysitter_go_now
     puts
   end
   
-  if ARGV.size == 1
-    launch_dir = ARGV.first
+end
+
+
+def make_babysitter_go_now
+  options, args = parse_args
+    
+  if args.size == 1
+    launch_dir = args.first
     unless File.directory? launch_dir 
       problem "Supplied launch dir (#{launch_dir.inspect}) does not exist "
     end
@@ -258,6 +267,7 @@ def make_babysitter_go_now
   
   loop { sleep 10 }
 end
+
 
 if $0 == __FILE__
   make_babysitter_go_now

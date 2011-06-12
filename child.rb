@@ -32,7 +32,7 @@ class ChildConnection < EM::Connection
   # Called when data is received from STDOUT
   #
   def receive_data data
-    data.each { |line| receive_line line }
+    data.lines.each { |line| receive_line line }
   end
 
   #
@@ -84,6 +84,7 @@ class Child
     @custom_actions     = runconf["actions"]
     @filter             = runconf["filter"] && Regexp.new(runconf["filter"])
     @multiplexed        = runconf["multiplexed"]
+    @delay              = runconf["delay"] || 0
 
     # initial state
     @state = :stopped
@@ -122,7 +123,7 @@ class Child
   }
 
   def actions
-    names = ACTIONS_FOR_STATE[state] or []
+    names = ACTIONS_FOR_STATE[state] || []
     names += @custom_actions.keys if @custom_actions
     names.uniq
   end
@@ -239,14 +240,21 @@ class Child
     end
 
     @crashes = 0 if intentional
-    puts "Start: #{name}"
-    launch_process
+
+    if @delay and @delay > 0
+      @state = :delayed_start
+      puts "Starting: #{name} (in #{@delay} seconds)"
+      EM.add_timer(@delay) { launch_process }
+    else
+      puts "Starting: #{name}"
+      launch_process
+    end
   end
 
   def stop(intentional=true)
-    return unless running?
+    return if not running?
 
-    puts "Stop: #{name}"
+    puts "Stopping: #{name}"
     @intentional_stop = intentional
     send_kill_signal("TERM")
   end

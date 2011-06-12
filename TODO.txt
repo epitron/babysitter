@@ -1,0 +1,26 @@
+    #@client = OSC::Client.new( '127.0.0.1', 3333 )
+    @client = OSC::Client.new( '192.168.1.14', 7781 )
+    #@client = OSC::Client.new(@remoteIPaddr,7780)
+    #@client.send( OSC::Message.new(@remotelogaddr ,  "-- #{name} EXITED. --"))
+    @client.send( OSC::Message.new(@remotelogaddr ,  "-- EXITED. --"))
+
+    @client.send( OSC::Message.new(@remotelogaddr ,  "-- EXITED. --"))
+    
+    Status:
+    - running -
+    + running +
+
+
+    #@client.send( OSC::Message.new("/<hostname>/<process_name>" ,  "-/+ <status> -/+"))
+    #@client.send( OSC::Message.new("/health/<hostname>" ,  "-/+ <status> -/+"))
+
+    
+    * babysitter gem (haml, sinatra, file-tail, etc.)
+    * loglines(nil) bug
+      - start webserver after processes
+      - return [] if file not found
+      - handle nils
+      - webserver eats all exceptions and doesn't blow up
+    * killing subprocesses 
+    
+    
