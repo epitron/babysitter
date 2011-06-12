@@ -19,12 +19,12 @@ begin
 
   %w[
     child
-    webserver
     lib/sysinfo
     lib/osc-ruby
     pp
     optparse
     fileutils
+    osc_status
   ].each do |mod|
     puts "  |_ #{mod}"
     require mod
@@ -79,6 +79,10 @@ class Babysitter
     # create lookup table
     @children_by_name = {}
     @children.each { |child| @children_by_name[child.name] = child }
+    
+    if hoststring = options[:osc_status]
+      @osc_status = OSCStatus.new(self, hoststring)
+    end
   end
 
   def runnable_paths(paths)
@@ -107,6 +111,10 @@ class Babysitter
       # Check if children have timed out
       EM.add_periodic_timer(5) do
         children.each { |child| child.check_timeout }
+      end
+      
+      if @osc_status
+        EM.add_periodic_timer(2) { @osc_status.update }
       end
     end
   end
@@ -206,6 +214,10 @@ def parse_args
       options[:browser] = value
     end
 
+    opts.on("-s", "--osc-status=host:port", "Send OSC status updates to specified HOST:PORT") do |value|
+      options[:osc_status] = value 
+    end
+
     opts.on("-t", "--[no-]test", "Run in test mode (use test.conf and log to the console)") do |value|
       options[:test_mode] = value
     end
@@ -257,9 +269,10 @@ def make_babysitter_go_now
   babysitter = Babysitter.new(launch_dir, options)
 
   if options[:web]
+    require 'webserver'
     Thread.new { WebServer.run! :host =>'0.0.0.0', :port=>4567, :environment=>:development, :babysitter=>babysitter }
   end
-
+  
   Sys.trap("HUP", "INT", "QUIT", "TERM") do
     babysitter.shutdown
   end
