@@ -6,7 +6,7 @@ A process manager which watches processes, feeds them configurations, tells them
 
 It's fully compatible with djb's "daemontools" process manager (aka. svscan).
 
-![screenshot](http://chris.ill-logic.com/images/babysitter.png)
+![screenshot](https://raw.githubusercontent.com/epitron/babysitter/master/screenshots/babysitter.png)
 
 ## To try it out:
 
